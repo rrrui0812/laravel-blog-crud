@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ArticlesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//因上方有use namespace，故ArticlesController才能這樣簡短
+//App\Http\Controllers\ArticlesController\ArticlesController::class
+Route::resource('articles', ArticlesController::class);
+
+Route::get('/', [ArticlesController::class, 'index'])->name('root');
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
