@@ -9,13 +9,19 @@ class ArticlesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except('index');
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
     public function index()
     {
-        $articles = Article::paginate(10);
+        $articles = Article::with('user')->orderBy('id', 'desc')->paginate(10);
         return view('articles.index', ['articles' => $articles]);
+    }
+
+    public function show($id)
+    {
+        $article = Article::find($id);
+        return view('articles.show', ['article' => $article]);
     }
 
     public function create()
@@ -50,5 +56,12 @@ class ArticlesController extends Controller
         ]);
         $article->update($content);
         return redirect()->route('root')->with('notice', '文章更新成功！');
+    }
+
+    public function destroy($id)
+    {
+        $article = auth()->user()->articles->find($id);
+        $article->delete();
+        return redirect()->route('root')->with('notice','文章已刪除！');
     }
 }
